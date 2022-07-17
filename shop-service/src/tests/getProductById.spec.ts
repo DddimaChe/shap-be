@@ -1,4 +1,4 @@
-import { getProductById } from '@functions/getProductById/handler'
+import { getProductsById } from '@functions/getProductsById/handler'
 const mockedId = {
     pathParameters: {
         productId: '1'
@@ -21,7 +21,7 @@ describe('getProductsById', () => {
 
     it('getProductsById\'s callback called with correct params', async () => {
         const fn = jest.fn();
-        await getProductById(mockedId, null, fn)
+        await getProductsById(mockedId, null, fn)
         expect(fn).toBeCalledWith(null, mockedSuccessResponse);
     });
 });

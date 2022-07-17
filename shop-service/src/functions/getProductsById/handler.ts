@@ -4,8 +4,8 @@ import { middyfy } from '@libs/lambda';
 import products from '../mock'
 
 
-export const getProductById: ValidatedEventAPIGatewayProxyEvent<unknown> = async (event) => {
-    console.log(`getProductById lambda called with ${event}`);
+export const getProductsById: ValidatedEventAPIGatewayProxyEvent<unknown> = async (event) => {
+    console.log(`getProductsById lambda called with ${event}`);
     const headers = {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Credentials": true,
@@ -22,14 +22,13 @@ export const getProductById: ValidatedEventAPIGatewayProxyEvent<unknown> = async
         const videoGamesProduct = await product
         return formatJSONResponse({
             videoGamesProduct,
-            headers,
-        }, 200);
+        }, 200, headers);
     } catch (error) {
         return formatJSONResponse({
-            message: error.code,
+            message: "Product not found",
             error: error,
-        }, error.statusCode);
+        }, error.statusCode,headers);
     }
 };
 
-export const main = middyfy(getProductById);
+export const main = middyfy(getProductsById);

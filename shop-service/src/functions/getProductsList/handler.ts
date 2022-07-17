@@ -25,7 +25,7 @@ export const getProductsList: ValidatedEventAPIGatewayProxyEvent<unknown> = asyn
         return formatJSONResponse({
             message: error.code,
             error: error,
-        }, error.statusCode);
+        }, error.statusCode, headers);
     }
 };
 
