@@ -23,6 +23,33 @@
             "description": "200 response"
           }
         }
+      },
+      "post": {
+        "summary": "postProduct",
+        "description": "",
+        "operationId": "postProduct.post./products",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Body required in the request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProductBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response"
+          }
+        }
       }
     },
     "/products/{productId}": {
@@ -52,6 +79,69 @@
       }
     }
   },
-  "definitions": {},
+  "definitions": {
+    "Product": {
+      "properties": {
+        "id": {
+          "title": "Product.id",
+          "type": "number"
+        },
+        "title": {
+          "title": "Product.title",
+          "type": "string"
+        },
+        "description": {
+          "title": "Product.description",
+          "type": "string"
+        },
+        "price": {
+          "title": "Product.price",
+          "type": "number"
+        },
+        "count": {
+          "title": "Product.count",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "price",
+        "count"
+      ],
+      "additionalProperties": false,
+      "title": "Product",
+      "type": "object"
+    },
+    "ProductBody": {
+      "properties": {
+        "title": {
+          "title": "ProductBody.title",
+          "type": "string"
+        },
+        "description": {
+          "title": "ProductBody.description",
+          "type": "string"
+        },
+        "price": {
+          "title": "ProductBody.price",
+          "type": "number"
+        },
+        "count": {
+          "title": "ProductBody.count",
+          "type": "number"
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "price"
+      ],
+      "additionalProperties": false,
+      "title": "ProductBody",
+      "type": "object"
+    }
+  },
   "securityDefinitions": {}
 };

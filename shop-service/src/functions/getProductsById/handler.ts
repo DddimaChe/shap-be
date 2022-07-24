@@ -1,8 +1,7 @@
 import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
 import { formatJSONResponse } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
-import products from '../mock'
-
+import {getProductById} from "../../services";
 
 export const getProductsById: ValidatedEventAPIGatewayProxyEvent<unknown> = async (event) => {
     console.log(`getProductsById lambda called with ${event}`);
@@ -14,14 +13,10 @@ export const getProductsById: ValidatedEventAPIGatewayProxyEvent<unknown> = asyn
     try {
         const productId = event.pathParameters.productId;
 
-        const product = new Promise((res) => {
-            const currentProduct = products.find(product => product.id === productId)
-            res(currentProduct)
-        })
+        const product = await getProductById(productId)
 
-        const videoGamesProduct = await product
         return formatJSONResponse({
-            videoGamesProduct,
+            product,
         }, 200, headers);
     } catch (error) {
         return formatJSONResponse({

@@ -1,7 +1,7 @@
 import type {ValidatedEventAPIGatewayProxyEvent} from '@libs/api-gateway';
 import {formatJSONResponse} from '@libs/api-gateway';
 import {middyfy} from '@libs/lambda';
-import products from '../mock'
+import {getAllProducts} from "../../services";
 
 
 export const getProductsList: ValidatedEventAPIGatewayProxyEvent<unknown> = async (event) => {
@@ -13,14 +13,12 @@ export const getProductsList: ValidatedEventAPIGatewayProxyEvent<unknown> = asyn
     }
     try {
 
-        const productsPromise = new Promise((res) => {
-            res(products)
-        })
+        const products: any[] = await getAllProducts();
 
-        const videoGamesProducts = await productsPromise
         return formatJSONResponse({
-            videoGamesProducts
+            products
         }, 200, headers);
+
     } catch (error) {
         return formatJSONResponse({
             message: error.code,
