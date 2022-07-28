@@ -46,6 +46,7 @@ export const addProduct = async (productData: any) => {
 
     return await connectToDB(async (client) => {
         try {
+            await client.query('BEGIN');
             const response = await client.query(
                 `INSERT INTO products (title, description, price) VALUES ($1, $2, $3) RETURNING id`,
                 [product.title, product.description, product.price]
@@ -54,8 +55,11 @@ export const addProduct = async (productData: any) => {
             const count = productData.count || 0;
 
             await client.query('INSERT INTO stocks (product_id, count) VALUES ($1, $2)', [id, count]);
+            await client.query('COMMIT');
             return { ...product, id, count };
         } catch (e) {
+            console.error('Error in transaction', e.stack)
+            await client.query('ROLLBACK');
             throw new ValidationError(e.message);
         }
     });
