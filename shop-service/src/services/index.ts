@@ -1,4 +1,6 @@
 import {connectToDB} from "../db";
+import {ValidationError} from "./validationError";
+import {validateProductData} from "../validation";
 
 export const getAllProducts = async () => {
 
@@ -32,16 +34,29 @@ export const getProductById = async (id: string) => {
     })
 }
 
-export const createProduct = async (product) => {
-    return await connectToDB(async ( client ) => {
-        const response = await client.query(
-            `INSERT INTO products (title, description, price) VALUES ($1, $2, $3) RETURNING id`,
-            [product.title, product.description, product.price]
-        );
-        const { id } = response.rows[0];
-        const count = product.count || 0;
 
-        await client.query('INSERT INTO stocks (product_id, count) VALUES ($1, $2)', [id, count]);
-        return { ...product, id, count };
-    })
-}
+const createProduct = ({ title, description = '', price }) => {
+    return {title, description, price};
+};
+
+
+export const addProduct = async (productData: any) => {
+    validateProductData(productData);
+    const product = createProduct(productData);
+
+    return await connectToDB(async (client) => {
+        try {
+            const response = await client.query(
+                `INSERT INTO products (title, description, price) VALUES ($1, $2, $3) RETURNING id`,
+                [product.title, product.description, product.price]
+            );
+            const { id } = response.rows[0];
+            const count = productData.count || 0;
+
+            await client.query('INSERT INTO stocks (product_id, count) VALUES ($1, $2)', [id, count]);
+            return { ...product, id, count };
+        } catch (e) {
+            throw new ValidationError(e.message);
+        }
+    });
+};
