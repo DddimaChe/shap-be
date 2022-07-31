@@ -8,7 +8,7 @@ describe('getProductsList', () => {
         body: JSON.stringify(products),
     }
 
-    it('getProductsList function with mock data', async () => {
+    it('index function with mock data', async () => {
         await getProductsList({}, null, fn)
         expect(fn).toBeCalledWith(mockedSuccessResponse);
     });

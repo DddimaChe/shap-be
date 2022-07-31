@@ -11,7 +11,24 @@
 #
 # Happy Coding!
 
-service: product-service
+plugins:
+  - serverless-webpack
+  - serverless-auto-swagger
+
+package:
+  individually: true # to package functions individually. You can toggle this and check the difference webpack generates
+
+custom:
+  webpack: # serverless-webpack plugin options
+    webpackConfig: webpack.config.js # Name of webpack configuration file
+    includeModules: true # Node modules configuration for packaging
+    packager: 'npm' # Packager that will be used to package your external modules
+  serverless-auto-swagger:
+    apiType: "httpApi"
+    generateSwaggerOnDeploy: true
+    typefiles?: ['./src/models/types.ts']
+
+service: shop-service
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -22,9 +39,22 @@ frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   stage: dev
   region: eu-west-1
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"
+      allowedMethods:
+        - GET
+        - POST
+  environment:
+    PG_HOST: lesson4.czwdmggdr6jd.eu-west-1.rds.amazonaws.com
+    PG_PORT: 5432
+    PG_DATABASE: postgres
+    PG_USERNAME: postgres
+    PG_PASSWORD: OQaF5u3qJfLLVyuztie9
 
 # you can add statements to the Lambda function's IAM Role here
 #  iam:
@@ -57,13 +87,29 @@ provider:
 #    - include-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
+  getProductsList:
+    handler: src/functions/getProductsList/index.getProductsList
     events:
-      - http:
-          path: products
+      - httpApi:
+          path: /products
           method: get
-#    The following are a few example events you can configure
+          cors: false
+  getProductsById:
+    handler: src/functions/getProductsById/index.getProductsById
+    events:
+      - httpApi:
+          path: /products/{productId}
+          method: get
+          cors: false
+  postProduct:
+    handler: src/functions/postProduct/index.postProduct
+    events:
+        - httpApi:
+            path: /products
+            method: post
+            cors: false
+
+        #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
 #    events:

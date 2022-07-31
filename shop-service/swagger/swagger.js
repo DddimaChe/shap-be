@@ -23,13 +23,30 @@
             "description": "200 response"
           }
         }
+      },
+      "post": {
+        "summary": "postProduct",
+        "description": "",
+        "operationId": "postProduct.post./products",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "200 response"
+          }
+        }
       }
     },
     "/products/{productId}": {
       "get": {
-        "summary": "getProductById",
+        "summary": "getProductsById",
         "description": "",
-        "operationId": "getProductById.get./products/{productId}",
+        "operationId": "getProductsById.get./products/{productId}",
         "consumes": [
           "application/json"
         ],
