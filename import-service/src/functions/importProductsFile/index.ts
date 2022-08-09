@@ -1,7 +1,6 @@
 import AWS from 'aws-sdk';
-import {formatJSONResponse} from "../../lib/formatJSON";
-
 const CONTENT_TYPE = 'text/csv';
+
 const BUCKET = `import-service-cloudx-bucket`;
 const REGION = `eu-west-1`;
 const UPLOADED = 'uploaded/'
@@ -31,13 +30,16 @@ const importProductsFile = async (event) => {
             });
         });
 
-        return formatJSONResponse({
-            signedUrl,
-        }, 200, headers);
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(signedUrl, null, 2),
+        };
     } catch (error) {
-        return formatJSONResponse({
-            error,
-        }, error.statusCode || 500, headers);
+        return {
+            statusCode: error.statusCode || 500,
+            body: JSON.stringify(error.message),
+        };
     }
 };
 
