@@ -1,0 +1,52 @@
+plugins:
+  - serverless-webpack # serverless webpack plugin
+
+package:
+  individually: true # to package functions individually. You can toggle this and check the difference webpack generates
+
+custom:
+  webpack: # serverless-webpack plugin options
+    webpackConfig: webpack.config.js # Name of webpack configuration file
+    includeModules: true # Node modules configuration for packaging
+    packager: 'npm' # Packager that will be used to package your external modules
+
+service: import-service
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: dev
+  region: eu-west-1
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action: s3:ListBucket
+      Resource:
+        - arn:aws:s3:::import-service-cloudx-bucket
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource:
+        - arn:aws:s3:::import-service-cloudx-bucket/*
+
+
+functions:
+  importProductsFile:
+    handler: src/functions/importProductsFile/index.importProductsFile
+    integration: http-proxy
+    events:
+      - http:
+          path: 'import/'
+          method: get
+
+  importFileParser:
+    handler: src/functions/importFileParser/index.importFileParser
+    events:
+      - s3:
+          bucket: import-service-cloudx-bucket
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploaded/
+          existing: true
