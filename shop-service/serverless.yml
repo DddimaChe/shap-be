@@ -50,11 +50,11 @@ provider:
         - GET
         - POST
   environment:
-    PG_HOST: lesson4.czwdmggdr6jd.eu-west-1.rds.amazonaws.com
-    PG_PORT: 5432
-    PG_DATABASE: postgres
-    PG_USERNAME: postgres
-    PG_PASSWORD: OQaF5u3qJfLLVyuztie9
+    PG_HOST: 1
+    PG_PORT: 1
+    PG_DATABASE: 1
+    PG_USERNAME: 1
+    PG_PASSWORD: 1
 
 # you can add statements to the Lambda function's IAM Role here
 #  iam:
