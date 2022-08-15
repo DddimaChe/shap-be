@@ -9,6 +9,22 @@ const headers = {
     "Access-Control-Allow-Origin": "*",
 }
 
+const sendToQueue = async (products) => {
+    const sqs = new AWS.SQS({ region: REGION });
+    const url = process.env.SQS_URL;
+
+    const promises = products.map(async (product) => {
+        const params = {
+            QueueUrl: url,
+            MessageBody: JSON.stringify(product),
+            DelaySeconds: 0,
+        };
+        await sqs.sendMessage(params).promise();
+    });
+
+    return Promise.all(promises);
+};
+
 const sendFileToBucket = async (records: any) => {
     const promises = records.map(async (record) => {
         const bucket = record.s3.bucket.name;
@@ -57,6 +73,12 @@ const importFileParser = async (event: any) => {
 
         try {
             await sendFileToBucket(event.Records);
+        } catch (e) {
+            throw new Error(e.message);
+        }
+
+        try {
+            await sendToQueue(parsedRecords);
         } catch (e) {
             throw new Error(e.message);
         }
