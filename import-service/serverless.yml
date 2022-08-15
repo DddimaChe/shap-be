@@ -20,7 +20,27 @@ provider:
   stage: dev
   region: eu-west-1
 
+
+  environment:
+    PG_HOST: 1
+    PG_PORT: 1
+    PG_DATABASE: 1
+    PG_USERNAME: 1
+    PG_PASSWORD: 1
+    SQS_URL:
+      Ref: SQSQueue
+    SNS_ARN:
+      Ref: SNSTopic
+
   iamRoleStatements:
+    - Effect: Allow
+      Action: sqs:*
+      Resource:
+        Fn::GetAtt: [ SQSQueue, Arn ]
+    - Effect: Allow
+      Action: sns:*
+      Resource:
+        Ref: SNSTopic
     - Effect: Allow
       Action: s3:ListBucket
       Resource:
@@ -30,6 +50,36 @@ provider:
         - s3:*
       Resource:
         - arn:aws:s3:::import-service-cloudx-bucket/*
+
+
+
+resources:
+  Resources:
+    SQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: catalogItemsQueue
+    SNSTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: aws-pic-app-topic
+    SNSSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: whynotmonkeys2191@gmail.com
+        Protocol: email
+        TopicArn:
+          Ref: SNSTopic
+    SNSSubscriptionSpeakers:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: dchelovakov@gmail.com
+        Protocol: email
+        FilterPolicy:
+          is_speakers:
+            - 'yes'
+        TopicArn:
+          Ref: SNSTopic
 
 
 functions:
@@ -50,3 +100,11 @@ functions:
           rules:
             - prefix: uploaded/
           existing: true
+
+  catalogBatchProcess:
+    handler: src/functions/catalogBatchProcess/index.catalogBatchProcess
+    events:
+      - sqs:
+          batchSize: 5
+          arn:
+            Fn::GetAtt: [ SQSQueue, Arn ]
