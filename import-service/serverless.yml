@@ -62,7 +62,7 @@ resources:
     SNSTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: product-topic
+        QueueName: catalogItemsQueue
     SNSSubscription:
       Type: AWS::SNS::Subscription
       Properties:
