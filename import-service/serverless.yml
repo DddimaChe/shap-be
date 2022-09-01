@@ -58,11 +58,11 @@ resources:
     SQSQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: catalogItemsQueue
+        QueueName: productQueue
     SNSTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: aws-pic-app-topic
+        TopicName: product-topic
     SNSSubscription:
       Type: AWS::SNS::Subscription
       Properties:
